@@ -21,6 +21,15 @@ class Wpup_UpdateServer {
 		}
 
 		$this->serverUrl = $serverUrl;
+
+		// use subdirectory
+		if ( isset($_GET['dir']) ) {
+			$safeDir = preg_replace('@[^a-z0-9\-_\.,+!]@i', '', $_GET['dir']);
+			$this->packageDirectory = $serverDirectory . '/packages/' . $safeDir;
+		} else {
+			$this->packageDirectory = $serverDirectory . '/packages';
+		}
+
 		$this->packageDirectory = $serverDirectory . '/packages';
 		$this->logDirectory = $serverDirectory . '/logs';
 		$this->cache = new Wpup_FileCache($serverDirectory . '/cache');

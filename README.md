@@ -1,16 +1,16 @@
 WP Update Server
 ================
 
-A custom update API for WordPress plugins and themes. 
+A custom update API for WordPress plugins and themes.
 
 Features
 --------
-* **Provide updates for plugins and themes.**    
+* **Provide updates for plugins and themes.**
 
   From the users perspective, the updates work just like they do with plugins and themes listed in the official WordPress.org directory.
 * **Easy to set up.**
 
-  Just upload the script directory to your server and drop a plugin or theme ZIP in the `packages` subdirectory. Now you have a working update API at `http://yourserver.com/wp-update-server/?action=get_metadata&slug=your-plugin`.
+  Just upload the script directory to your server and drop a plugin or theme ZIP in the `packages` subdirectory or even a subdirectory of it by providing a 'dir' parameter. Now you have a working update API at `http://yourserver.com/wp-update-server/?action=get_metadata&slug=your-plugin` or `http://yourserver.com/wp-update-server/?action=get_metadata&slug=your-plugin&dir=my-project`.
 * **Easy to integrate** with existing plugins and themes.
 
   All it takes is about 5 lines of code. See the [plugin update checker](http://w-shadow.com/blog/2010/09/02/automatic-updates-for-any-plugin/) and [theme update checker](http://w-shadow.com/blog/2011/06/02/automatic-updates-for-commercial-themes/) docs for details, or just scroll down to the "Getting Started" section for the short version.
@@ -20,18 +20,18 @@ Features
 * **Designed for extensibility.**
 
   Want to secure your upgrade download links? Or use a custom logger or cache? Maybe your plugin doesn't have a standard `readme.txt` and you'd prefer to load the changelog and other update meta from the database instead? Create your own customized server by extending the `Wpup_UpdateServer` class. See examples below.
-  	
+
 Getting Started
 ---------------
 
 ### Setting Up the Server
 This part of the setup process is identical for both plugins and themes. For the sake of brevity, I'll describe it from the plugin perspective.
 
-1. Upload the `wp-update-server` directory to your site. You can rename it to something else (e.g. `updates`) if you want. 
+1. Upload the `wp-update-server` directory to your site. You can rename it to something else (e.g. `updates`) if you want.
 2. Make the `cache` and `logs` subdirectories writable by PHP.
 3. Create a Zip archive of your plugin's directory. The name of the archive must be the same as the name of the directory + ".zip".
 4. Copy the Zip file to the `packages` subdirectory.
-5. Verify that the API is working by visiting `/wp-update-server/?action=get_metadata&slug=plugin-directory-name` in your browser. You should see a JSON document containing various information about your plugin (name, version, description and so on).
+5. Verify that the API is working by visiting `/wp-update-server/?action=get_metadata&slug=plugin-directory-name` (or `/wp-update-server/?action=get_metadata&slug=plugin-directory-name&dir=my-project`) in your browser. You should see a JSON document containing various information about your plugin (name, version, description and so on).
 
 **Tip:** Use the JSONView extension ([Firefox](https://addons.mozilla.org/en-US/firefox/addon/10869/),  [Chrome](https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc)) to pretty-print JSON in the browser.
 
@@ -60,20 +60,20 @@ Now that you have the server ready to go, the next step is to make your plugin q
    ```php
 require 'path/to/plugin-update-checker/plugin-update-checker.php';
 $MyUpdateChecker = PucFactory::buildUpdateChecker(
-	'http://example.com/wp-update-server/?action=get_metadata&slug=plugin-directory-name', //Metadata URL.
+	'http://example.com/wp-update-server/?action=get_metadata&slug=plugin-directory-name', //Metadata URL (for subdir add '&dir=my-project').
 	__FILE__, //Full path to the main plugin file.
 	'plugin-directory-name' //Plugin slug. Usually it's the same as the name of the directory.
 );
 ```
-4. When you're ready to release an update, just zip the plugin directory as described above and put it in the `packages` subdirectory on the server (overwriting the previous version). 
+4. When you're ready to release an update, just zip the plugin directory as described above and put it in the `packages` subdirectory on the server (overwriting the previous version).
 
-The library will check for updates twice a day by default. If the update checker discovers that a new version is available, it will display an update notification in the WordPress Dashboard and the user will be able to install it by clicking the "upgrade now" link. It works just like with plugins hosted on WordPress.org from the users' perspective. 
+The library will check for updates twice a day by default. If the update checker discovers that a new version is available, it will display an update notification in the WordPress Dashboard and the user will be able to install it by clicking the "upgrade now" link. It works just like with plugins hosted on WordPress.org from the users' perspective.
 
 See the [update checker docs](http://w-shadow.com/blog/2010/09/02/automatic-updates-for-any-plugin/) for detailed usage instructions and and more examples.
 
 **Tip:** Create a `readme.txt` file for your plugin. If you have one, the update server will use it to generate the plugin information page that users see when they click the "View version x.y.z details" link in an update notification. The readme must conform to [the WordPress.org readme standard](http://wordpress.org/extend/plugins/about/readme.txt).
 
-**Note:** Your plugin or theme must be active for updates to work. One consequence of this is that on a multisite installation updates will only show up if your plugin is active on the main site. This is because only plugins that are enabled on the main site are loaded in the network admin. For reference, the main site is the one that has the path "/" in the *All Sites* list. 
+**Note:** Your plugin or theme must be active for updates to work. One consequence of this is that on a multisite installation updates will only show up if your plugin is active on the main site. This is because only plugins that are enabled on the main site are loaded in the network admin. For reference, the main site is the one that has the path "/" in the *All Sites* list.
 
 ### Integrating with Themes
 
@@ -85,19 +85,19 @@ See the [update checker docs](http://w-shadow.com/blog/2010/09/02/automatic-upda
 require 'path/to/theme-updates/theme-update-checker.php';
 $MyThemeUpdateChecker = new ThemeUpdateChecker(
     'theme-directory-name', //Theme slug. Usually the same as the name of its directory.
-    'http://example.com/wp-update-server/?action=get_metadata&slug=theme-directory-name' //Metadata URL.
+    'http://example.com/wp-update-server/?action=get_metadata&slug=theme-directory-name' //Metadata URL (for subdir add '&dir=my-project').
 );
 ```
 4. Add a `Details URI` header to your `style.css`:
 
   ```Details URI: http://example.com/my-theme-changelog.html```
-  
+
   This header specifies the page that the user will see if they click the "View version x.y.z details" link in an update notification. Set it to the URL of your "What’s New In Version z.y.z" page or the theme homepage.
 
 Like with plugin updates, the theme update checker will query the server for theme details every 12 hours and display an update notification in the WordPress Dashboard if a new version is available.
 
 See the [theme update checker docs](http://w-shadow.com/blog/2011/06/02/automatic-updates-for-commercial-themes/) for more information.
-	
+
 ## Advanced Topics
 
 ### Logging
@@ -125,7 +125,7 @@ class MyCustomServer extends Wpup_UpdateServer {
 		unset($meta['download_url']);
 		return $meta;
 	}
-	
+
 	protected function actionDownload(Wpup_Request $request) {
 		$this->exitWithError('Downloads are disabled.', 403);
 	}
@@ -168,11 +168,11 @@ class ExamplePlugin {
 	public function __construct() {
 		require_once __DIR__ . '/path/to/wp-update-server/loader.php';
 		$this->updateServer = new Wpup_UpdateServer(home_url('/'));
-		
+
 		add_filter('query_vars', array($this, 'addQueryVariables'));
 		add_action('template_redirect', array($this, 'handleUpdateApiRequest'));
 	}
-	
+
 	public function addQueryVariables($queryVariables) {
 		$queryVariables = array_merge($queryVariables, array(
 			'update_action',
@@ -180,7 +180,7 @@ class ExamplePlugin {
 		));
 		return $queryVariables;
 	}
-	
+
 	public function handleUpdateApiRequest() {
 		if ( get_query_var('update_action') ) {
 			$this->updateServer->handleRequest(array(
