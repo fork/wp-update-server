@@ -1,3 +1,4 @@
 packages/*.zip
 packages/*/*.zip
 cache/*.txt
+logs/*.log
