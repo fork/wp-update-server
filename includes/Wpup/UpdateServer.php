@@ -179,13 +179,16 @@ class Wpup_UpdateServer {
 	}
 
 	/**
-	 * Stub. You can override this in a subclass to show update info only to
+	 * You can override this in a subclass to show update info only to
 	 * users with a valid license key (for example).
 	 *
 	 * @param $request
 	 */
 	protected function checkAuthorization($request) {
-		//Stub.
+		// see includes/config.php
+		if ( defined('UPDATE_AUTH_TOKEN') && $request->action === 'download' && $request->param('update_auth_token') !== UPDATE_AUTH_TOKEN ) {
+			$this->exitWithError('auth token invalid!', 403);
+		}
 	}
 
 	/**

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/includes/config.php';
+
 require_once __DIR__ . '/includes/Wpup/Package.php';
 require_once __DIR__ . '/includes/Wpup/InvalidPackageException.php';
 require_once __DIR__ . '/includes/Wpup/Request.php';
