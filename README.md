@@ -198,4 +198,18 @@ $examplePlugin = new ExamplePlugin();
 
 ### Securing download links
 
+See includes/config.php to setup an auth token. in your theme/update checker add:
+
+```php
+/* ... Code that initializes the update checker ... */
+
+//Add auth token to query arguments.
+$updateChecker->addQueryArgFilter('wsh_filter_update_checks');
+public function wsh_filter_update_checks($queryArgs) {
+	$queryArgs['update_auth_token'] = urlencode('crazytokenweflkj23jr1289ehfsadvalbjööl2o3r');
+	return $queryArgs;
+}
+```
+
+
 See [this blog post](http://w-shadow.com/blog/2013/03/19/plugin-updates-securing-download-links/) for a high-level overview and some brief examples.
