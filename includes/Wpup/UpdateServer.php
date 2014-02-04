@@ -30,7 +30,6 @@ class Wpup_UpdateServer {
 			$this->packageDirectory = $serverDirectory . '/packages';
 		}
 
-		$this->packageDirectory = $serverDirectory . '/packages';
 		$this->logDirectory = $serverDirectory . '/logs';
 		$this->cache = new Wpup_FileCache($serverDirectory . '/cache');
 	}
