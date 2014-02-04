@@ -199,8 +199,13 @@ class Wpup_UpdateServer {
 	protected function generateDownloadUrl(Wpup_Package $package) {
 		$query = array(
 			'action' => 'download',
-			'slug' => $package->slug,
+			'slug' => $package->slug
 		);
+
+		// is subdirectory
+		if ( fnmatch("*/packages/*/*.zip", $package->getFilename()) ) {
+			$query['dir'] = basename( dirname($package->getFilename()) );
+		}
 		return self::addQueryArg($query, $this->serverUrl);
 	}
 
